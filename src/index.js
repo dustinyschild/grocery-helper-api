@@ -6,7 +6,7 @@ const debug = require("debug")("app:start");
 const app = express();
 
 // connect to database
-require("./lib/db/pg");
+require("./db/pg");
 
 const { baseRouter } = require("./routes/index");
 app.use(cors());

@@ -1,10 +1,26 @@
 const { Router } = require("express");
-const basicAuth = require("../lib/middleware/basic-auth");
-const UserService = require("../lib/services/UserService");
-const AuthService = require("../lib/services/AuthService");
+const basicAuth = require("../middleware/basic-auth");
+const UserService = require("../services/UserService");
+const AuthService = require("../services/AuthService");
 const debug = require("debug")("app:user");
 
 const userRouter = Router();
+
+userRouter.post("/add", async (req, res) => {
+  const { username, email, password } = req.body;
+
+  const password_hash = await AuthService.hashPassword(password);
+
+  const { username } = await UserService.addUser({
+    username,
+    email,
+    password_hash
+  });
+
+  const token = AuthService.sign({ sub: username });
+
+  res.status(201).json({ token });
+});
 
 userRouter.get("/token", basicAuth, async (req, res) => {
   debug("GET /api/user/token");

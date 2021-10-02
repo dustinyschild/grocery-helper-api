@@ -1,5 +1,22 @@
 const pool = require("../db/pg");
 
+const addUser = ({ username, email, password_hash }) => {
+  return pool.query(
+    `
+      INSERT INTO users (
+        username
+        , email
+        , password_hash
+      )
+      VALUES (
+        $1, $2, $3
+      )
+      RETURNING *
+    `,
+    [username, email, password_hash]
+  );
+};
+
 const getUserById = async (userId) => {
   return pool.query(
     `
@@ -38,4 +55,4 @@ const getUserByUsername = async (username) => {
   return result.rows[0];
 };
 
-module.exports = { getUserById, getUserByUsername };
+module.exports = { addUser, getUserById, getUserByUsername };
