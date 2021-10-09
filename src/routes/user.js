@@ -3,24 +3,11 @@ const basicAuth = require("../middleware/basic-auth");
 const UserService = require("../services/UserService");
 const AuthService = require("../services/AuthService");
 const debug = require("debug")("app:user");
+const { register } = require("../controllers/user");
 
 const userRouter = Router();
 
-userRouter.post("/add", async (req, res) => {
-  const { username, email, password } = req.body;
-
-  const password_hash = await AuthService.hashPassword(password);
-
-  const { username } = await UserService.addUser({
-    username,
-    email,
-    password_hash
-  });
-
-  const token = AuthService.sign({ sub: username });
-
-  res.status(201).json({ token });
-});
+userRouter.post("/add", register);
 
 userRouter.get("/token", basicAuth, async (req, res) => {
   debug("GET /api/user/token");
@@ -33,7 +20,7 @@ userRouter.get("/token", basicAuth, async (req, res) => {
   const isValidPassword = await AuthService.comparePasswords(
     password,
     user.password_hash
-  ).catch((err) => new Error(err));
+  ).catch(err => new Error(err));
 
   if (!isValidPassword) {
     throw new Error("Invalid credentials.");
@@ -48,14 +35,14 @@ userRouter.get("/:id", async (req, res) => {
   debug("GET /api/user/:id");
 
   await UserService.getUserById(req.params.id)
-    .then((result) => {
+    .then(result => {
       if (result.rows.length === 0) {
         return res.sendStatus(404);
       }
 
       return res.json(result.rows[0]);
     })
-    .catch((err) => {
+    .catch(err => {
       debug(err.message);
       res.status = 500;
       res.json(err);

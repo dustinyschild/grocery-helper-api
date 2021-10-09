@@ -1,56 +1,27 @@
 const pool = require("../db/pg");
+const { readFile } = require("fs").promises;
+const { getQuery } = require("../utils/file");
 
-const addUser = ({ username, email, password_hash }) => {
-  return pool.query(
-    `
-      INSERT INTO users (
-        username
-        , email
-        , password_hash
-      )
-      VALUES (
-        $1, $2, $3
-      )
-      RETURNING *
-    `,
-    [username, email, password_hash]
-  );
+const addUser = async ({ username, email, password_hash }) => {
+  const sqlQuery = await getQuery("/sql/add_user.pgsql");
+
+  return pool.query(sqlQuery, [username, email, password_hash]);
 };
 
-const getUserById = async (userId) => {
-  return pool.query(
-    `
-      SELECT
-        user_id
-        , username
-        , email
-        , email_confirmed
-        , password_hash
-        , last_login_date
-        , created_date
-      FROM users
-      WHERE user_id = $1
-    `,
-    [userId]
-  );
+const getUserById = async userId => {
+  const sqlQuery = await getQuery("/sql/get_user_by_id.pgsql");
+
+  const result = await pool.query(sqlQuery, [userId]);
+
+  return result.rows[0];
 };
 
-const getUserByUsername = async (username) => {
-  const result = await pool.query(
-    `
-      SELECT
-        user_id
-        , username
-        , email
-        , email_confirmed
-        , password_hash
-        , last_login_date
-        , created_date
-      FROM users
-      WHERE username = $1
-    `,
-    [username]
+const getUserByUsername = async username => {
+  const sqlQuery = readFile(__dirname + "/sql/get_user_by_username.sql").then(
+    buffer => buffer.toString()
   );
+
+  const result = await pool.query(sqlQuery, [username]);
 
   return result.rows[0];
 };

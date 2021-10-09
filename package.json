@@ -4,7 +4,8 @@
   "main": "src/index.js",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon ."
+    "start": "nodemon .",
+    "test": "mocha './test/' --recursive --watch"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
@@ -16,6 +17,7 @@
     "pg": "^8.7.1"
   },
   "devDependencies": {
+    "chai": "^4.3.4",
     "mocha": "^9.1.2",
     "nodemon": "^2.0.13"
   }
