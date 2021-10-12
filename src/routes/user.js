@@ -3,11 +3,19 @@ const basicAuth = require("../middleware/basic-auth");
 const UserService = require("../services/UserService");
 const AuthService = require("../services/AuthService");
 const debug = require("debug")("app:user");
-const { register } = require("../controllers/user");
+const User = require("../../models/user");
 
 const userRouter = Router();
 
-userRouter.post("/add", register);
+userRouter.post("/", async (req, res, next) => {
+  debug("register user");
+  const { username, email, password } = req.body;
+
+  User.createUser({ username, email, password })
+    .then(user => user.generateToken())
+    .then(token => res.status(201).send(token))
+    .catch(next);
+});
 
 userRouter.get("/token", basicAuth, async (req, res) => {
   debug("GET /api/user/token");

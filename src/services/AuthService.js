@@ -2,9 +2,14 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const debug = require("debug")("app:auth");
 
-const hashPassword = async () => {
+const hashPassword = async password => {
   debug("hashing password");
-  await bcrypt.hash(password).then((err, result) => {
+
+  if (!password) {
+    return reject(createError(400, "password required"));
+  }
+
+  await bcrypt.hash(password, 10).then((err, result) => {
     if (err) throw new Error(err);
 
     return result;
@@ -12,7 +17,7 @@ const hashPassword = async () => {
 };
 
 const comparePasswords = async (password, password_hash) => {
-  debug("verifying password");
+  debug("verify password");
   await bcrypt.compare(password, password_hash).then((err, result) => {
     if (err) throw new Error(err);
 
@@ -20,7 +25,7 @@ const comparePasswords = async (password, password_hash) => {
   });
 };
 
-const sign = (payload) => {
+const sign = payload => {
   debug("generating token");
   // setting 2 hour expiration, this should be lowered when refresh tokens are implemented
   return jwt.sign(payload, process.env.TOKEN_SECRET, { expiresIn: "2h" });
