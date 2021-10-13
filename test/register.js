@@ -1,4 +1,4 @@
-const app = require("../../src/index");
+const app = require("../src/index");
 const request = require("supertest")(app);
 
 describe("User registration", async function () {

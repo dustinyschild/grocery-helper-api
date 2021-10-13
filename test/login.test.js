@@ -1,7 +1,7 @@
 // const { getQuery } = require("../../src/utils/file");
-require("dotenv").config({
-  path: [".env.test"].join("/")
-});
+// require("dotenv").config({
+//   path: [".env.test"].join("/")
+// });
 
 // describe("User login", async function () {
 //   before(async function () {
