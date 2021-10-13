@@ -17,3 +17,5 @@ app.use("/api", baseRouter);
 app.listen(process.env.PORT, function () {
   debug("Listening on port " + process.env.PORT);
 });
+
+module.exports = app;

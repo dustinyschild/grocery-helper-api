@@ -3,7 +3,7 @@ const basicAuth = require("../middleware/basic-auth");
 const UserService = require("../services/UserService");
 const AuthService = require("../services/AuthService");
 const debug = require("debug")("app:user");
-const User = require("../../models/user");
+const User = require("../models/user");
 
 const userRouter = Router();
 
