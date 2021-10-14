@@ -1,19 +1,34 @@
+const { expect } = require("chai");
+const jwt = require("jsonwebtoken");
+const debug = require("debug")("test:user");
+
 const app = require("../src/index");
+const User = require("../src/models/user");
 const request = require("supertest")(app);
 
 describe("User registration", async function () {
+  const sampleUser = {
+    username: "xkcd",
+    email: "xkcd@example.com",
+    password: "correct horse battery staple"
+  };
+
   it("should create a new user", async function () {
-    // arrange
-    // db connection already established
-    // act
-    request
+    return request
       .post("/api/user")
-      .send({
-        username: "xkcd",
-        email: "xkcd@example.com",
-        password: "correct horse battery staple"
-      })
-      .expect(200);
-    // assert
+      .send(sampleUser)
+      .expect(201)
+      .expect(res => {
+        debug(res);
+        expect(jwt.verify(res.text, process.env.APP_SECRET).sub).to.equal(
+          sampleUser.username
+        );
+      });
+  });
+
+  after(async function () {
+    const user = await User.findOne({ username: sampleUser.username });
+
+    user.remove({});
   });
 });
