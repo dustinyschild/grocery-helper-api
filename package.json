@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "nodemon .",
-    "test": "mocha  --watch"
+    "test": "mocha"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
