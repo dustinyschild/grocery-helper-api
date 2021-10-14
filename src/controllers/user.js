@@ -17,20 +17,22 @@ const getToken = async (req, res) => {
   const { username, password } = res.locals.auth;
 
   debug("validating user");
-  const user = await UserService.getUserByUsername(username);
 
-  const isValidPassword = await AuthService.comparePasswords(
-    password,
-    user.password_hash
-  ).catch(err => new Error(err));
+  const user = await User.findOne({ username }).catch(err => new Error(err));
+
+  if (!user) {
+    throw new Error("user not found");
+  }
+
+  const isValidPassword = user.verifyPassword(password);
 
   if (!isValidPassword) {
     throw new Error("Invalid credentials.");
   }
 
-  const token = AuthService.sign({ sub: user.username });
+  const token = user.generateToken();
 
-  res.json({ token });
+  res.send(token);
 };
 
 module.exports = { register, getToken };
