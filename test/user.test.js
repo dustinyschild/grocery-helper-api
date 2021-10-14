@@ -6,7 +6,7 @@ const app = require("../src/index");
 const User = require("../src/models/user");
 const request = require("supertest")(app);
 
-describe("User registration", async function () {
+describe("User", async function () {
   const sampleUser = {
     username: "xkcd",
     email: "xkcd@example.com",
@@ -24,6 +24,10 @@ describe("User registration", async function () {
           sampleUser.username
         );
       });
+  });
+
+  it("should return a token", async function () {
+    return request.get("/api/user/token").expect(200);
   });
 
   after(async function () {

@@ -1,17 +1,36 @@
-const register = async (req, res) => {
+const User = require("../models/user");
+const debug = require("debug")("app:register");
+
+const register = async (req, res, next) => {
+  debug("register new user");
   const { username, email, password } = req.body;
 
-  const password_hash = await AuthService.hashPassword(password);
+  User.createUser({ username, email, password })
+    .then(user => user.generateToken())
+    .then(token => res.status(201).send(token))
+    .catch(next);
+};
 
-  const user = await UserService.addUser({
-    username,
-    email,
-    password_hash
-  }).catch(err => new Error(err));
+const getToken = async (req, res) => {
+  debug("GET /api/user/token");
+
+  const { username, password } = res.locals.auth;
+
+  debug("validating user");
+  const user = await UserService.getUserByUsername(username);
+
+  const isValidPassword = await AuthService.comparePasswords(
+    password,
+    user.password_hash
+  ).catch(err => new Error(err));
+
+  if (!isValidPassword) {
+    throw new Error("Invalid credentials.");
+  }
 
   const token = AuthService.sign({ sub: user.username });
 
-  res.status(201).json({ token });
+  res.json({ token });
 };
 
-module.exports = { register };
+module.exports = { register, getToken };
