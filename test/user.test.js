@@ -21,9 +21,9 @@ describe("User", function () {
         .expect(201)
         .expect(res => {
           debug(res);
-          expect(jwt.verify(res.text, process.env.APP_SECRET).sub).to.equal(
-            sampleUser.username
-          );
+          expect(
+            jwt.verify(res.text, process.env.APP_SECRET).username
+          ).to.equal(sampleUser.username);
         });
     });
 
@@ -34,7 +34,7 @@ describe("User", function () {
     });
   });
 
-  describe("login", function () {
+  describe("login", async function () {
     before(async function () {
       await User.createUser(sampleUser);
     });
@@ -45,9 +45,36 @@ describe("User", function () {
         .auth(sampleUser.username, sampleUser.password)
         .expect(200)
         .expect(res => {
-          expect(jwt.verify(res.text, process.env.APP_SECRET).sub).to.equal(
-            sampleUser.username
-          );
+          expect(
+            jwt.verify(res.text, process.env.APP_SECRET).username
+          ).to.equal(sampleUser.username);
+        });
+    });
+
+    after(async function () {
+      const user = await User.findOne({ username: sampleUser.username });
+
+      user.remove({});
+    });
+  });
+
+  describe("GET", async function () {
+    let testUser;
+
+    before(async function () {
+      const { id, username, email } = await User.createUser(sampleUser);
+
+      testUser = { id, username, email };
+    });
+
+    it("should return a user object", async function () {
+      console.log(testUser);
+      return request
+        .get("/api/user/" + testUser.id)
+        .auth("jwt", { type: "bearer" })
+        .expect(200)
+        .expect(res => {
+          expect(res.body).to.deep.equal(testUser);
         });
     });
 

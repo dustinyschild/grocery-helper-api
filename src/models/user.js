@@ -40,7 +40,10 @@ userSchema.methods.hashPassword = async function (password) {
 
 userSchema.methods.generateToken = function () {
   debug("generate token");
-  return jwt.sign({ sub: this.username }, process.env.APP_SECRET);
+  return jwt.sign(
+    { sub: this.id, username: this.username },
+    process.env.APP_SECRET
+  );
 };
 
 const User = mongoose.models.user || mongoose.model("user", userSchema);

@@ -11,6 +11,18 @@ const register = async (req, res, next) => {
     .catch(next);
 };
 
+const getUser = async (req, res, next) => {
+  debug("get user data");
+
+  const user = await User.findById(req.params.id);
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  res.send({ id: user.id, username: user.username, email: user.email });
+};
+
 const getToken = async (req, res) => {
   debug("GET /api/user/token");
 
@@ -35,4 +47,4 @@ const getToken = async (req, res) => {
   res.send(token);
 };
 
-module.exports = { register, getToken };
+module.exports = { register, getToken, getUser };
