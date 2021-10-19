@@ -1,7 +1,5 @@
 const { Router } = require("express");
 const basicAuth = require("../middleware/basic-auth");
-const UserService = require("../services/UserService");
-const debug = require("debug")("app:user");
 const { register, getToken, getUser } = require("../controllers/user");
 
 const userRouter = Router();
