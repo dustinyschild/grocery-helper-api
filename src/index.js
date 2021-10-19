@@ -6,7 +6,6 @@ const debug = require("debug")("app:server");
 const app = express();
 
 // connect to database
-require("./db/pg");
 require("./db/mongoose");
 
 const { baseRouter } = require("./routes/index");
