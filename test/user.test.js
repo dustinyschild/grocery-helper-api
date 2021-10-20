@@ -63,18 +63,15 @@ describe("User", function () {
     let token;
 
     before(async function () {
-      const user = await User.createUser(sampleUser);
+      const { id, username, email, generateToken } = await User.createUser(
+        sampleUser
+      );
 
-      token = user.generateToken();
-      testUser = {
-        id: user.id,
-        username: user.username,
-        email: user.email
-      };
+      token = generateToken();
+      testUser = { id, username, email };
     });
 
     it("should return a user object", async function () {
-      console.log(testUser);
       return request
         .get("/api/user/" + testUser.id)
         .auth(token, { type: "bearer" })

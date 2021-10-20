@@ -1,7 +1,7 @@
-const debug = require("debug")("app:middleware:basic-auth");
 const jwt = require("jsonwebtoken");
+const debug = require("debug")("app:middleware:basic-auth");
 
-module.exports = (req, res, next) => {
+module.exports = async (req, res, next) => {
   debug("validating token");
 
   const authHeader = req.header("Authorization");
@@ -13,9 +13,10 @@ module.exports = (req, res, next) => {
     );
   }
 
-  const isValid = jwt.verify(token, process.env.APP_SECRET);
+  const decoded = jwt.verify(token, process.env.APP_SECRET);
+  debug(decoded);
 
-  if (!isValid) {
+  if (!decoded) {
     throw new Error("Invalid credentials provided");
   }
 
