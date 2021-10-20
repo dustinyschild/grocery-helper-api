@@ -1,5 +1,5 @@
 const User = require("../models/user");
-const debug = require("debug")("app:register");
+const debug = require("debug")("app:user");
 
 const register = async (req, res, next) => {
   debug("register new user");

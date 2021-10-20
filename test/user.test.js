@@ -60,18 +60,21 @@ describe("User", function () {
 
   describe("GET", async function () {
     let testUser;
+    let token;
 
     before(async function () {
-      const { id, username, email } = await User.createUser(sampleUser);
+      const { id, username, email, generateToken } = await User.createUser(
+        sampleUser
+      );
 
+      token = generateToken();
       testUser = { id, username, email };
     });
 
     it("should return a user object", async function () {
-      console.log(testUser);
       return request
         .get("/api/user/" + testUser.id)
-        .auth("jwt", { type: "bearer" })
+        .auth(token, { type: "bearer" })
         .expect(200)
         .expect(res => {
           expect(res.body).to.deep.equal(testUser);
